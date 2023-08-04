@@ -3,6 +3,7 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from numbers import Number
 
+import torch
 import torch as th
 import torch.nn.functional as F
 from choices import *
@@ -235,7 +236,14 @@ class ResBlock(TimestepBlock):
                 if cond is None:
                     cond_out = None
                 else:
-                    cond_out = self.cond_emb_layers(cond).type(h.dtype)
+                    # check if cond is dict or tensor:
+                    # if dict, then it's a dict of tensors
+                    if isinstance(cond, dict):
+                        cond_ = cond['cond']
+                        assert isinstance(cond_, torch.Tensor)
+                        cond_out = self.cond_emb_layers(cond_).type(h.dtype)
+                    else:
+                        cond_out = self.cond_emb_layers(cond).type(h.dtype)
 
                 if cond_out is not None:
                     while len(cond_out.shape) < len(h.shape):

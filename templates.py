@@ -28,7 +28,7 @@ def ddpm():
     return conf
 
 
-def autoenc_base():
+def autoenc_base(in_channels=3):
     """
     base configuration for all Diff-AE models.
     """
@@ -54,6 +54,7 @@ def autoenc_base():
     conf.sample_size = 32
     conf.T_eval = 20
     conf.T = 1000
+    conf.net_in_channels = in_channels
     conf.make_model_conf()
     return conf
 
@@ -138,6 +139,23 @@ def ffhq128_autoenc_base():
     return conf
 
 
+def ultrasound_autoenc_base():
+    conf = autoenc_base(in_channels=1)
+    conf.data_name = 'ultrasound'
+    conf.scale_up_gpus(4)
+    conf.img_size = 128  # todo check what fits on 24 gb
+    conf.net_ch = 128
+    # final resolution = 8x8
+    conf.net_ch_mult = (1, 1, 2, 3, 4)
+    # final resolution = 4x4
+    conf.net_enc_channel_mult = (1, 1, 2, 3, 4, 4)
+    conf.eval_ema_every_samples = 1000
+    conf.eval_every_samples = 100
+    conf.make_model_conf()
+    return conf
+
+
+
 def ffhq256_autoenc():
     conf = ffhq128_autoenc_base()
     conf.img_size = 256
@@ -197,6 +215,19 @@ def ffhq128_autoenc_130M():
     conf.eval_ema_every_samples = 10_000_000
     conf.eval_every_samples = 10_000_000
     conf.name = 'ffhq128_autoenc_130M'
+    return conf
+
+
+def ultrasound_autoenc():
+    conf = ultrasound_autoenc_base()
+    conf.total_samples = 10_000
+    conf.eval_ema_every_samples = 1000
+    conf.eval_every_samples = 100
+    conf.name = 'ultrasound_autoenc'
+    conf.batch_size = 8
+    conf.batch_size_eval = 8
+    conf.fp16 = True
+    conf.num_workers = 0
     return conf
 
 

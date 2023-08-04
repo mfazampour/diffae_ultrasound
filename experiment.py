@@ -64,7 +64,7 @@ class LitModel(pl.LightningModule):
         # initial variables for consistent sampling
         self.register_buffer(
             'x_T',
-            torch.randn(conf.sample_size, 3, conf.img_size, conf.img_size))
+            torch.randn(conf.sample_size, conf.net_in_channels, conf.img_size, conf.img_size))
 
         if conf.pretrain is not None:
             print(f'loading pretrain ... {conf.pretrain.name}')
@@ -101,7 +101,7 @@ class LitModel(pl.LightningModule):
             latent_sampler = self.conf._make_latent_diffusion_conf(T_latent).make_sampler()
 
         noise = torch.randn(N,
-                            3,
+                            self.conf.model_out_channels,
                             self.conf.img_size,
                             self.conf.img_size,
                             device=device)
@@ -314,7 +314,7 @@ class LitModel(pl.LightningModule):
 
                     if with_render:
                         noise = torch.randn(len(cond),
-                                            3,
+                                            self.conf.model_out_channels,
                                             self.conf.img_size,
                                             self.conf.img_size,
                                             device=self.device)

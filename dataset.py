@@ -83,6 +83,24 @@ class SubsetDataset(Dataset):
         return self.dataset[index]
 
 
+class BaseUltrasoundDataset(Dataset):
+    def __init__(self, path):
+        self.path = path
+        # find all the png files in the path
+        self.paths = [p for p in Path(f'{path}').glob(f'**/*.png')]
+        # sort the paths
+        self.paths = sorted(self.paths)
+        # get the length of the dataset
+        self.length = len(self.paths)
+
+    def __len__(self):
+        return self.length
+
+    def __getitem__(self, index):
+        path = os.path.join(self.path, self.paths[index])
+        img = Image.open(path)
+        return img
+
 class BaseLMDB(Dataset):
     def __init__(self, path, original_resolution, zfill: int = 5):
         self.original_resolution = original_resolution
@@ -215,6 +233,52 @@ def d2c_crop():
     y1 = cx - 64
     y2 = cx + 64
     return Crop(x1, x2, y1, y2)
+
+
+class UltrasoundDb(Dataset):
+
+    def __init__(self,
+                 path,
+                 image_size=128,
+                 original_resolution=256,
+                 split=None,
+                 as_tensor: bool = True,
+                 do_augment: bool = True,
+                 do_normalize: bool = True,
+                 **kwargs):
+        self.original_resolution = original_resolution
+        self.data = BaseUltrasoundDataset(path)
+        self.length = len(self.data)
+
+        if split is None:
+            self.offset = 0
+        else:
+            raise NotImplementedError()
+
+        transform = [
+            transforms.Resize(image_size),
+            transforms.CenterCrop(image_size),
+        ]
+
+        if do_augment:
+            transform.append(transforms.RandomHorizontalFlip())
+        if as_tensor:
+            transform.append(transforms.ToTensor())
+        if do_normalize:
+            transform.append(
+                transforms.Normalize(0.5, 0.5))
+        self.transform = transforms.Compose(transform)
+
+    def __len__(self):
+        return self.length
+
+    def __getitem__(self, index):
+        assert index < self.length
+        index = index + self.offset
+        img = self.data[index]
+        if self.transform is not None:
+            img = self.transform(img)
+        return {'img': img, 'index': index}
 
 
 class CelebAlmdb(Dataset):

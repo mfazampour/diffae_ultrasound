@@ -39,6 +39,8 @@ data_paths = {
         'datasets/celeba_anno/CelebAMask-HQ-attribute-anno.txt'),
     'celeba_relight':
     os.path.expanduser('datasets/celeba_hq_light/celeba_light.txt'),
+    'ultrasound':
+    "/mnt/projects/aorta_scan/random_simulated_ultrasound/CT001/2d_images/"
 }
 
 
@@ -117,6 +119,7 @@ class TrainConfig(BaseConfig):
     net_ch: int = 64
     net_enc_attn: Tuple[int] = None
     net_enc_k: int = None
+    net_in_channels: int = 3
     # number of resblocks for the encoder (half-unet)
     net_enc_num_res_blocks: int = 2
     net_enc_channel_mult: Tuple[int] = None
@@ -260,7 +263,7 @@ class TrainConfig(BaseConfig):
 
     @property
     def model_out_channels(self):
-        return 3
+        return 1
 
     def make_T_sampler(self):
         if self.T_sampler == 'uniform':
@@ -301,6 +304,11 @@ class TrainConfig(BaseConfig):
                               original_resolution=None,
                               crop_d2c=True,
                               **kwargs)
+        elif self.data_name == 'ultrasound':
+            return UltrasoundDb(path=path or self.data_path,
+                                image_size=self.img_size,
+                                original_resolution=None,
+                                **kwargs)
         else:
             raise NotImplementedError()
 
@@ -341,7 +349,7 @@ class TrainConfig(BaseConfig):
                 dropout=self.dropout,
                 embed_channels=self.net_beatgans_embed_channels,
                 image_size=self.img_size,
-                in_channels=3,
+                in_channels=self.net_in_channels,
                 model_channels=self.net_ch,
                 num_classes=None,
                 num_head_channels=-1,
@@ -401,7 +409,7 @@ class TrainConfig(BaseConfig):
                 enc_grad_checkpoint=self.net_enc_grad_checkpoint,
                 enc_attn_resolutions=self.net_enc_attn,
                 image_size=self.img_size,
-                in_channels=3,
+                in_channels=self.net_in_channels,
                 model_channels=self.net_ch,
                 num_classes=None,
                 num_head_channels=-1,

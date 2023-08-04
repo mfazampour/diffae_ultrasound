@@ -88,7 +88,7 @@ def evaluate_lpips(
                     model_kwargs=model_kwargs)
                 x_T = x_T['sample']
             else:
-                x_T = torch.randn((len(imgs), 3, conf.img_size, conf.img_size),
+                x_T = torch.randn((len(imgs), conf.model_out_channels, conf.img_size, conf.img_size),
                                   device=device)
 
             if conf.model_type == ModelType.ddpm:
@@ -222,7 +222,7 @@ def evaluate_fid(
             for i in trange(0, eval_num_images, batch_size, desc=desc):
                 batch_size = min(batch_size, eval_num_images - i)
                 x_T = torch.randn(
-                    (batch_size, 3, conf.img_size, conf.img_size),
+                    (batch_size, conf.model_out_channels, conf.img_size, conf.img_size),
                     device=device)
                 batch_images = render_uncondition(
                     conf=conf,
@@ -250,7 +250,7 @@ def evaluate_fid(
                 for i in trange(0, eval_num_images, batch_size, desc=desc):
                     batch_size = min(batch_size, eval_num_images - i)
                     x_T = torch.randn(
-                        (batch_size, 3, conf.img_size, conf.img_size),
+                        (batch_size, conf.model_out_channels, conf.img_size, conf.img_size),
                         device=device)
                     batch_images = render_uncondition(
                         conf=conf,
@@ -283,7 +283,7 @@ def evaluate_fid(
                 for batch in tqdm(train_loader, desc='generating images'):
                     imgs = batch['img'].to(device)
                     x_T = torch.randn(
-                        (len(imgs), 3, conf.img_size, conf.img_size),
+                        (len(imgs), conf.model_out_channels, conf.img_size, conf.img_size),
                         device=device)
                     batch_images = render_condition(
                         conf=conf,
@@ -291,8 +291,7 @@ def evaluate_fid(
                         x_T=x_T,
                         x_start=imgs,
                         cond=None,
-                        sampler=sampler,
-                        latent_sampler=latent_sampler).cpu()
+                        sampler=sampler).cpu()
                     # model: BeatGANsAutoencModel
                     # # returns {'cond', 'cond2'}
                     # conds = model.encode(imgs)
