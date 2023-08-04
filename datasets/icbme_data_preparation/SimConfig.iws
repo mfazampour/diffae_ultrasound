@@ -1,0 +1,316 @@
+<!--ImFusion Suite, 18.11.2021-->
+<propertyfile version="1.1">
+    <param name="workspaceVersion">16</param>
+    <property name="Datasets">
+        <property name="Data">
+            <param name="topDown">1</param>
+            <param name="name">CT_image</param>
+            <param name="blockId">1</param>
+            <param name="original">1</param>
+            <param name="uid">data0</param>
+            <property name="MetaData">
+                <param name="topDown">1</param>
+            </property>
+            <property name="Components">
+                <property name="DisplayOptions2d">
+                    <property name="TransferFunction">
+                        <param name="window">9</param>
+                        <param name="level">10.5</param>
+                        <param name="mode">0</param>
+                    </property>
+                </property>
+            </property>
+        </property>
+    </property>
+    <property name="Interface">
+        <param name="outputUids">"data0" </param>
+        <param name="inputUids"></param>
+    </property>
+    <property name="Algorithms">
+        <property name="NIFTI File">
+            <param name="location">%(INPUT)</param>
+            <param name="execute">1</param>
+            <param name="inputUids"></param>
+            <param name="outputUids">"data0" </param>
+        </property>
+        <property name="Set Modality">
+			<param name="modality">8</param>
+			<param name="resetDisplayOptions">1</param>
+			<param name="execute">1</param>
+			<param name="inputUids">"data0" </param>
+			<param name="outputUids"/>
+		</property>
+        <property name="Hybrid Ultrasound Simulation">
+            <param name="attenuationCoefficient">0.8</param>
+            <param name="gain">0</param>
+            <param name="probeWidth">40</param>
+            <param name="depth">150</param>
+            <param name="elementsHeight">3</param>
+            <param name="soundSpeed">1540</param>
+            <param name="signalFreq">2</param>
+            <param name="noiseSizeScale">6</param>
+            <param name="noiseIntensityScale">0.3</param>
+            <param name="waveWidth">2</param>
+            <param name="SxFactor">6</param>
+            <param name="SyFactor">3</param>
+            <param name="wavePerPulse">2</param>
+            <param name="duration">10</param>
+            <param name="intensityThreshold">0</param>
+            <param name="RFNoise">0</param>
+            <param name="TGCScaleFactor">0.2</param>
+            <param name="TGCAlpha">0.65</param>
+            <param name="rejectThreshold">0</param>
+            <param name="scaleExponent1">1</param>
+            <param name="scaleExponent2">0.4</param>
+            <param name="focusDepth">50</param>
+            <param name="reflectFactor">2</param>
+            <param name="hilbertLength">8</param>
+            <param name="frameCount">50</param>
+            <param name="elevationRayCount">10</param>
+            <param name="linesCount">128</param>
+            <param name="axialSamplePoints">512</param>
+            <param name="rayCount">1280</param>
+            <param name="multReflection">4</param>
+            <param name="beamSmoothness">6</param>
+            <param name="slicesPerp">1</param>
+            <param name="notUseConvolution">0</param>
+            <param name="sliceFlipX">0</param>
+            <param name="sliceFlipY">0</param>
+            <param name="dataFlipX">0</param>
+            <param name="dataFlipY">0</param>
+            <param name="prepare">0</param>
+            <param name="inputUids">"data0" </param>
+            <param name="outputUids"></param>
+            <param name="execute">1</param>
+            <property name="SplineTransducer">
+                <param name="name">Transducer Spline</param>
+                <param name="points">%(TRANSSPLINE)</param>
+                <param name="labelPixelOffset">-0.455922969258992 -74.7156283753061 </param>
+                <param name="isClosed">0</param>
+            </property>
+            <property name="SplineDirection">
+                <param name="name">Direction Spline</param>
+                <param name="points">%(DIRSPLINE)</param>
+                <param name="labelPixelOffset">-0.705546085734896 -74.7093155661819 </param>
+                <param name="isClosed">0</param>
+            </property>
+            <property name="FrameGeometry">
+                <param name="type">Convex</param>
+                <param name="offset">0 -61.7221664167199 </param>
+                <param name="isTopDown">1</param>
+                <param name="indicatorPosition">0</param>
+                <param name="coordinateSystem">1</param>
+                <param name="shortRadius">31.1144765372083</param>
+                <param name="longRadius">171.114476537208</param>
+                <param name="openingAngle">40</param>
+            </property>
+            <property name="AcousticParameters">
+                <property name="1_Background">
+                    <param name="SoundSpeed_m_s">1540</param>
+                    <param name="AcousticImpedance_g_cm2s">150000</param>
+                    <param name="AttenuationCoeff_dB_MHzcm">0.200000002980232</param>
+                    <param name="Speckle_m0">0</param>
+                    <param name="Speckle_m1">0</param>
+                    <param name="Speckle_s0">0</param>
+                </property>
+                <property name="17_Air">
+                    <param name="SoundSpeed_m_s">345</param>
+                    <param name="AcousticImpedance_g_cm2s">4.09999990463257</param>
+                    <param name="AttenuationCoeff_dB_MHzcm">1.63999998569489</param>
+                    <param name="Speckle_m0">0</param>
+                    <param name="Speckle_m1">0</param>
+                    <param name="Speckle_s0">0</param>
+                </property>
+                <property name="2_Lung">
+                    <param name="SoundSpeed_m_s">1300</param>
+                    <param name="AcousticImpedance_g_cm2s">10000</param>
+                    <param name="AttenuationCoeff_dB_MHzcm">1.63999998569489</param>
+                    <param name="Speckle_m0">0.5</param>
+                    <param name="Speckle_m1">0.5</param>
+                    <param name="Speckle_s0">0</param>
+                </property>
+                <property name="3_Fat">
+                    <param name="SoundSpeed_m_s">1470</param>
+                    <param name="AcousticImpedance_g_cm2s">142000</param>
+                    <param name="AttenuationCoeff_dB_MHzcm">0.479999989271164</param>
+                    <param name="Speckle_m0">0.819999992847443</param>
+                    <param name="Speckle_m1">0.5</param>
+                    <param name="Speckle_s0">0.100000001490116</param>
+                </property>
+                <property name="8_Muscle">
+                    <param name="SoundSpeed_m_s">1568</param>
+                    <param name="AcousticImpedance_g_cm2s">163000</param>
+                    <param name="AttenuationCoeff_dB_MHzcm">0.490000009536743</param>
+                    <param name="Speckle_m0">0.529999971389771</param>
+                    <param name="Speckle_m1">0.509999990463257</param>
+                    <param name="Speckle_s0">0</param>
+                </property>
+                <property name="11_Liver">
+                    <param name="SoundSpeed_m_s">1540</param>
+                    <param name="AcousticImpedance_g_cm2s">286000</param>
+                    <param name="AttenuationCoeff_dB_MHzcm">0.400000005960464</param>
+                    <param name="Speckle_m0">0.200000002980232</param>
+                    <param name="Speckle_m1">0.400000005960464</param>
+                    <param name="Speckle_s0">0</param>
+                </property>
+                <property name="6_Kidney">
+                    <param name="SoundSpeed_m_s">1540</param>
+                    <param name="AcousticImpedance_g_cm2s">106000</param>
+                    <param name="AttenuationCoeff_dB_MHzcm">0.200000002980232</param>
+                    <param name="Speckle_m0">0.189999997615814</param>
+                    <param name="Speckle_m1">0.170000001788139</param>
+                    <param name="Speckle_s0">0.0399999991059303</param>
+                </property>
+                <property name="4_Water">
+                    <param name="SoundSpeed_m_s">1492</param>
+                    <param name="AcousticImpedance_g_cm2s">149000</param>
+                    <param name="AttenuationCoeff_dB_MHzcm">0.200000002980232</param>
+                    <param name="Speckle_m0">0</param>
+                    <param name="Speckle_m1">0</param>
+                    <param name="Speckle_s0">0</param>
+                </property>
+                <property name="5_CSF">
+                    <param name="SoundSpeed_m_s">1515</param>
+                    <param name="AcousticImpedance_g_cm2s">152000</param>
+                    <param name="AttenuationCoeff_dB_MHzcm">0.0020000000949949</param>
+                    <param name="Speckle_m0">0.0500000007450581</param>
+                    <param name="Speckle_m1">0.00999999977648258</param>
+                    <param name="Speckle_s0">0</param>
+                </property>
+                <property name="9_Grey Matter">
+                    <param name="SoundSpeed_m_s">1590</param>
+                    <param name="AcousticImpedance_g_cm2s">30000</param>
+                    <param name="AttenuationCoeff_dB_MHzcm">0.540000021457672</param>
+                    <param name="Speckle_m0">0.300000011920929</param>
+                    <param name="Speckle_m1">0.200000002980232</param>
+                    <param name="Speckle_s0">0</param>
+                </property>
+                <property name="10_White Matter">
+                    <param name="SoundSpeed_m_s">1530</param>
+                    <param name="AcousticImpedance_g_cm2s">80000</param>
+                    <param name="AttenuationCoeff_dB_MHzcm">0.540000021457672</param>
+                    <param name="Speckle_m0">0.5</param>
+                    <param name="Speckle_m1">0.349999994039536</param>
+                    <param name="Speckle_s0">0</param>
+                </property>
+                <property name="16_Brain Tumor">
+                    <param name="SoundSpeed_m_s">1530</param>
+                    <param name="AcousticImpedance_g_cm2s">163000</param>
+                    <param name="AttenuationCoeff_dB_MHzcm">0.699999988079071</param>
+                    <param name="Speckle_m0">0.800000011920929</param>
+                    <param name="Speckle_m1">0.5</param>
+                    <param name="Speckle_s0">0</param>
+                </property>
+                <property name="15_Vessel">
+                    <param name="SoundSpeed_m_s">1540</param>
+                    <param name="AcousticImpedance_g_cm2s">106000</param>
+                    <param name="AttenuationCoeff_dB_MHzcm">0.5</param>
+                    <param name="Speckle_m0">0.899999976158142</param>
+                    <param name="Speckle_m1">0.649999976158142</param>
+                    <param name="Speckle_s0">0.239999994635582</param>
+                </property>
+                <property name="12_Soft Tissue">
+                    <param name="SoundSpeed_m_s">1540</param>
+                    <param name="AcousticImpedance_g_cm2s">63000</param>
+                    <param name="AttenuationCoeff_dB_MHzcm">0.540000021457672</param>
+                    <param name="Speckle_m0">0.639999985694885</param>
+                    <param name="Speckle_m1">0.639999985694885</param>
+                    <param name="Speckle_s0">0.100000001490116</param>
+                </property>
+                <property name="13_Bone">
+                    <param name="SoundSpeed_m_s">3600</param>
+                    <param name="AcousticImpedance_g_cm2s">612000</param>
+                    <param name="AttenuationCoeff_dB_MHzcm">2</param>
+                    <param name="Speckle_m0">1</param>
+                    <param name="Speckle_m1">1</param>
+                    <param name="Speckle_s0">0.5</param>
+                </property>
+                <property name="14_Skull">
+                    <param name="SoundSpeed_m_s">3600</param>
+                    <param name="AcousticImpedance_g_cm2s">612000</param>
+                    <param name="AttenuationCoeff_dB_MHzcm">7.80000019073486</param>
+                    <param name="Speckle_m0">0.779999971389771</param>
+                    <param name="Speckle_m1">0.560000002384186</param>
+                    <param name="Speckle_s0">0.100000001490116</param>
+                </property>
+            </property>
+        </property>
+        <property name="ImFusionFile">
+            <param name="location">%(OUTPUT)</param>
+			<param name="compressionMode">0</param>
+			<param name="passes">1</param>
+			<param name="dx">3</param>
+			<param name="dy">3</param>
+			<param name="ignoredDataComponentIds"/>
+			<param name="blockId">-1</param>
+			<param name="execute">1</param>
+			<param name="inputUids">"data1" </param>
+			<param name="outputUids"/>
+        </property>
+    </property>
+    <!-- <property name="Display">
+        <param name="layoutMode">0</param>
+        <param name="focusedView">0</param>
+        <property name="Views">
+            <property name="0">
+                <param name="flip">1</param>
+                <param name="zoom">1.18530485132037</param>
+                <param name="showZoom">1</param>
+            </property>
+            <property name="1">
+                <param name="interpolation">0</param>
+                <param name="flip">1</param>
+                <param name="zoom">1.7506725002961</param>
+                <param name="showZoom">1</param>
+                <param name="viewMatrix">-0.999785923875015 0.0138825872859669 0.0153421051889926 63.0570327529196 0.013837070894389 0.9998995534694 -0.00306894782609614 -36.6099521853131 -0.0153831690638261 -0.00285600104046848 -0.999877593192092 13.5861386871805 0 0 0 1 </param>
+                <param name="sliceMatrix">-0.999785923875015 0.0138825872859669 0.0153421051889926 63.0570327529196 0.013837070894389 0.9998995534694 -0.00306894782609614 -36.6099521853131 -0.0153831690638261 -0.00285600104046848 -0.999877593192092 13.5861386871805 0 0 0 1 </param>
+            </property>
+            <property name="2">
+                <param name="interpolation">0</param>
+                <param name="flip">1</param>
+                <param name="zoom">1.7506725002961</param>
+                <param name="showZoom">1</param>
+                <param name="viewMatrix">0.0153421051889925 0.0138825872859669 0.999785923875015 63.0570327529196 -0.00306894782609614 0.9998995534694 -0.013837070894389 -36.6099521853131 -0.999877593192092 -0.00285600104046848 0.015383169063826 13.5861386871805 0 0 0 1 </param>
+                <param name="sliceMatrix">0.0153421051889925 0.0138825872859669 0.999785923875015 63.0570327529196 -0.00306894782609614 0.9998995534694 -0.013837070894389 -36.6099521853131 -0.999877593192092 -0.00285600104046848 0.015383169063826 13.5861386871805 0 0 0 1 </param>
+            </property>
+            <property name="3">
+                <param name="interpolation">0</param>
+                <param name="flip">1</param>
+                <param name="zoom">1.7506725002961</param>
+                <param name="showZoom">1</param>
+                <param name="viewMatrix">-0.999785923875015 -0.0153421051889926 0.013882587285967 63.0570327529196 0.013837070894389 0.0030689478260962 0.9998995534694 -36.6099521853131 -0.0153831690638261 0.999877593192092 -0.00285600104046854 13.5861386871805 0 0 0 1 </param>
+                <param name="sliceMatrix">-0.999785923875015 -0.0153421051889926 0.013882587285967 63.0570327529196 0.013837070894389 0.0030689478260962 0.9998995534694 -36.6099521853131 -0.0153831690638261 0.999877593192092 -0.00285600104046854 13.5861386871805 0 0 0 1 </param>
+            </property>
+            <property name="4">
+                <param name="renderMode">4</param>
+                <param name="sceneCenter">63.0570327529196 -36.6099521853131 13.5861386871805 </param>
+                <property name="Camera">
+                    <param name="poseMatrix">0.560321591661165 0.0450420657591911 0.827049530699608 -44.9196387090269 -0.56420387087862 -0.710277375758609 0.420927596590013 3.85502049595129 0.606394018773173 -0.702479367524491 -0.372570841852274 -508.962861125176 0 0 0 1 </param>
+                    <param name="focalLength">1.37373870972731 1.37373870972731 </param>
+                </property>
+                <property name="VolumeRenderer">
+                    <param name="mode">4</param>
+                    <param name="showDeformations">0</param>
+                    <param name="ambientAttenuationDistance">0</param>
+                </property>
+            </property>
+        </property>
+        <property name="VisibleData">
+            <property name="0">
+                <param name="visible">"1" </param>
+            </property>
+            <property name="1">
+                <param name="visible">"1" "data0" </param>
+            </property>
+            <property name="2">
+                <param name="visible">"1" "data0" </param>
+            </property>
+            <property name="3">
+                <param name="visible">"1" "data0" </param>
+            </property>
+            <property name="4">
+                <param name="visible">"data0" </param>
+            </property>
+        </property>
+    </property> -->
+</propertyfile>
