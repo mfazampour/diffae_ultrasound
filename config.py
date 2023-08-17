@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from model.unet import ScaleAt
 from model.latentnet import *
 from diffusion.resample import UniformSampler
@@ -40,7 +42,7 @@ data_paths = {
     'celeba_relight':
     os.path.expanduser('datasets/celeba_hq_light/celeba_light.txt'),
     'ultrasound':
-    "/mnt/projects/aorta_scan/random_simulated_ultrasound/CT001/2d_images/"
+    "/mnt/polyaxon/data1/ct_us_registration_prius/"
 }
 
 
@@ -89,7 +91,7 @@ class TrainConfig(BaseConfig):
     data_val_name: str = None
     diffusion_type: str = None
     dropout: float = 0.1
-    ema_decay: float = 0.9999
+    ema_decay: float = 0.95  # todo: fine-tune
     eval_num_images: int = 5_000
     eval_every_samples: int = 200_000
     eval_ema_every_samples: int = 200_000
@@ -153,6 +155,7 @@ class TrainConfig(BaseConfig):
     T_sampler: str = 'uniform'
     T: int = 1_000
     total_samples: int = 10_000_000
+    num_epochs: int = 1
     warmup: int = 0
     pretrain: PretrainConfig = None
     continue_from: PretrainConfig = None
@@ -163,6 +166,7 @@ class TrainConfig(BaseConfig):
     use_cache_dataset: bool = False
     data_cache_dir: str = os.path.expanduser('~/cache')
     work_cache_dir: str = os.path.expanduser('~/mycache')
+    on_cluster: bool = False
     # to be overridden
     name: str = ''
 
@@ -192,6 +196,8 @@ class TrainConfig(BaseConfig):
     def data_path(self):
         # may use the cache dir
         path = data_paths[self.data_name]
+        if self.on_cluster:
+            path = "/home/guests/farid_azampour/diffae_dataset/"
         if self.use_cache_dataset and path is not None:
             path = use_cached_dataset_path(
                 path, f'{self.data_cache_dir}/{self.data_name}')

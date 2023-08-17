@@ -143,14 +143,20 @@ def ultrasound_autoenc_base():
     conf = autoenc_base(in_channels=1)
     conf.data_name = 'ultrasound'
     conf.scale_up_gpus(4)
-    conf.img_size = 128  # todo check what fits on 24 gb
+    conf.img_size = 256  # todo check what fits on 24 gb
     conf.net_ch = 128
     # final resolution = 8x8
     conf.net_ch_mult = (1, 1, 2, 3, 4)
     # final resolution = 4x4
     conf.net_enc_channel_mult = (1, 1, 2, 3, 4, 4)
-    conf.eval_ema_every_samples = 1000
-    conf.eval_every_samples = 100
+    conf.eval_ema_every_samples = 16000
+    conf.eval_every_samples = 16000
+
+    # conf.net_beatgans_embed_channels = 256
+    # conf.net_ch_mult = (1, 2, 4, 8)
+    # conf.net_ch = 32
+    # conf.net_enc_channel_mult = (1, 2, 4, 4, 8)
+
     conf.make_model_conf()
     return conf
 
@@ -218,16 +224,23 @@ def ffhq128_autoenc_130M():
     return conf
 
 
-def ultrasound_autoenc():
+def ultrasound_autoenc(on_cluster=False):
     conf = ultrasound_autoenc_base()
-    conf.total_samples = 10_000
-    conf.eval_ema_every_samples = 1000
-    conf.eval_every_samples = 100
-    conf.name = 'ultrasound_autoenc'
-    conf.batch_size = 8
-    conf.batch_size_eval = 8
+    conf.total_samples = 14_600
+    # conf.eval_ema_every_samples = 200
+    # conf.eval_every_samples = 100
+    conf.name = 'ultrasound_autoenc_256'
+    conf.batch_size = 16
+    conf.batch_size_eval = 16
     conf.fp16 = True
-    conf.num_workers = 0
+    conf.num_epochs = 50
+    conf.eval_num_images = 100
+
+    if on_cluster:
+        conf.on_cluster = True
+        # todo: check if the cache folder should change
+
+    # conf.num_workers = 0
     return conf
 
 
@@ -299,6 +312,16 @@ def pretrain_ffhq128_autoenc130M():
         path=f'checkpoints/{ffhq128_autoenc_130M().name}/last.ckpt',
     )
     conf.latent_infer_path = f'checkpoints/{ffhq128_autoenc_130M().name}/latent.pkl'
+    return conf
+
+
+def pretrain_ultrasound_autoenc130M():
+    conf = ultrasound_autoenc_base()
+    conf.pretrain = PretrainConfig(
+        name='130M',
+        path=f'checkpoints/{ultrasound_autoenc().name}/last.ckpt',
+    )
+    conf.latent_infer_path = f'checkpoints/{ultrasound_autoenc().name}/latent.pkl'
     return conf
 
 

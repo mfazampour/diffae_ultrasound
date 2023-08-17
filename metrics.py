@@ -177,6 +177,8 @@ def evaluate_fid(
     conds_std=None,
     remove_cache: bool = True,
     clip_latent_noise: bool = False,
+    epoch: int = None,
+    postfix: str = '',
 ):
     assert conf.fid_cache is not None
     if get_rank() == 0:
@@ -185,11 +187,11 @@ def evaluate_fid(
         val_loader = make_subset_loader(conf,
                                         dataset=val_data,
                                         batch_size=conf.batch_size_eval,
-                                        shuffle=False,
+                                        shuffle=True,
                                         parallel=False)
 
         # put the val images to a directory
-        cache_dir = f'{conf.fid_cache}_{conf.eval_num_images}'
+        cache_dir = f'{conf.fid_cache}'  # this was repeated: _{conf.eval_num_images}
         if (os.path.exists(cache_dir)
                 and len(os.listdir(cache_dir)) < conf.eval_num_images):
             shutil.rmtree(cache_dir)
@@ -200,9 +202,9 @@ def evaluate_fid(
             loader_to_path(val_loader, cache_dir, denormalize=True)
 
         # create the generate dir
-        if os.path.exists(conf.generate_dir):
-            shutil.rmtree(conf.generate_dir)
-        os.makedirs(conf.generate_dir)
+        if os.path.exists(os.path.join(conf.generate_dir, f'base')):
+            shutil.rmtree(os.path.join(conf.generate_dir, f'base'))
+        os.makedirs(os.path.join(conf.generate_dir, f'base'))
 
     barrier()
 
@@ -214,7 +216,17 @@ def evaluate_fid(
         return world_size * idx + rank
 
     model.eval()
+
+    # path to save the generated images
+    if epoch is not None:
+        generate_dir = os.path.join(conf.generate_dir, f'{postfix}_epoch_{epoch}')
+    else:
+        generate_dir = os.path.join(conf.generate_dir, f'base')
+    if not os.path.exists(generate_dir):
+        os.makedirs(generate_dir)
+
     with torch.no_grad():
+
         if conf.model_type.can_sample():
             eval_num_images = chunk_size(conf.eval_num_images, rank,
                                          world_size)
@@ -239,7 +251,7 @@ def evaluate_fid(
                     img_name = filename(i + j)
                     torchvision.utils.save_image(
                         batch_images[j],
-                        os.path.join(conf.generate_dir, f'{img_name}.png'))
+                        os.path.join(generate_dir, f'{img_name}.png'))
         elif conf.model_type == ModelType.autoencoder:
             if conf.train_mode.is_latent_diffusion():
                 # evaluate autoencoder + latent diffusion (doesn't give the images)
@@ -268,7 +280,7 @@ def evaluate_fid(
                         img_name = filename(i + j)
                         torchvision.utils.save_image(
                             batch_images[j],
-                            os.path.join(conf.generate_dir, f'{img_name}.png'))
+                            os.path.join(generate_dir, f'{img_name}.png'))
             else:
                 # evaulate autoencoder (given the images)
                 # to make the FID fair, autoencoder must not see the validation dataset
@@ -305,7 +317,11 @@ def evaluate_fid(
                         img_name = filename(i + j)
                         torchvision.utils.save_image(
                             batch_images[j],
-                            os.path.join(conf.generate_dir, f'{img_name}.png'))
+                            os.path.join(generate_dir, f'{img_name}.png'))
+                        torchvision.utils.save_image(
+                            imgs[j, ...].squeeze().cpu(),
+                            os.path.join(generate_dir, f'{img_name}_orig.png'),
+                            normalize=True)
                     i += len(imgs)
         else:
             raise NotImplementedError()
@@ -315,14 +331,14 @@ def evaluate_fid(
 
     if get_rank() == 0:
         fid = fid_score.calculate_fid_given_paths(
-            [cache_dir, conf.generate_dir],
+            [cache_dir, generate_dir],
             batch_size,
             device=device,
             dims=2048)
 
         # remove the cache
-        if remove_cache and os.path.exists(conf.generate_dir):
-            shutil.rmtree(conf.generate_dir)
+        if remove_cache and os.path.exists(generate_dir) and epoch is None:
+            shutil.rmtree(generate_dir)
 
     barrier()
 

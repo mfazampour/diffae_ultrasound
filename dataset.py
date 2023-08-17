@@ -53,7 +53,7 @@ class ImageDataset(Dataset):
             transform.append(transforms.ToTensor())
         if do_normalize:
             transform.append(
-                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)))
+                transforms.Normalize(0.5, 0.5))
         self.transform = transforms.Compose(transform)
 
     def __len__(self):
@@ -152,7 +152,7 @@ def make_transform(
         ]
     transform.append(transforms.RandomHorizontalFlip(p=flip_prob))
     transform.append(transforms.ToTensor())
-    transform.append(transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)))
+    transform.append(transforms.Normalize(0.5, 0.5))
     transform = transforms.Compose(transform)
     return transform
 

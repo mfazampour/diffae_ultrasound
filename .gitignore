@@ -13,3 +13,7 @@ datasets/celeba
 checkpoints
 
 .ipynb_checkpoints/
+
+/.idea
+
+/datasets/icbme_data_preparation/.idea/

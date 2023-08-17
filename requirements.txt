@@ -1,7 +1,7 @@
 pytorch-lightning==1.4.5
 torchmetrics==0.5.0
-torch==1.8.1
-torchvision
+torch==1.13.1
+torchvision==0.14.1
 scipy==1.5.4
 numpy==1.19.5
 tqdm

@@ -412,7 +412,7 @@ class LitModel(pl.LightningModule):
         """
         after each training step ...
         """
-        if self.is_last_accum(batch_idx):
+        if self.is_last_accum(batch_idx):  # todo: check if this is correct
             # only apply ema on the last gradient accumulation step,
             # if it is the iteration that has optimizer.step()
             if self.conf.train_mode == TrainMode.latent_diffusion:
@@ -576,7 +576,8 @@ class LitModel(pl.LightningModule):
         For, FID. It is a fast version with 5k images (gold standard is 50k).
         Don't use its results in the paper!
         """
-        def fid(model, postfix):
+        def fid(model, postfix, epoch: int = None):
+            print(f'evaluating FID {postfix} at {epoch} ...')
             score = evaluate_fid(self.eval_sampler,
                                  model,
                                  self.conf,
@@ -585,7 +586,9 @@ class LitModel(pl.LightningModule):
                                  val_data=self.val_data,
                                  latent_sampler=self.eval_latent_sampler,
                                  conds_mean=self.conds_mean,
-                                 conds_std=self.conds_std)
+                                 conds_std=self.conds_std,
+                                 epoch=epoch,
+                                 postfix=postfix)
             if self.global_rank == 0:
                 self.logger.experiment.add_scalar(f'FID{postfix}', score,
                                                   self.num_samples)
@@ -620,13 +623,13 @@ class LitModel(pl.LightningModule):
                 self.conf.batch_size_effective):
             print(f'eval fid @ {self.num_samples}')
             lpips(self.model, '')
-            fid(self.model, '')
+            fid(self.model, '', epoch=self.current_epoch)
 
         if self.conf.eval_ema_every_samples > 0 and self.num_samples > 0 and is_time(
                 self.num_samples, self.conf.eval_ema_every_samples,
                 self.conf.batch_size_effective):
             print(f'eval fid ema @ {self.num_samples}')
-            fid(self.ema_model, '_ema')
+            fid(self.ema_model, '_ema', epoch=self.current_epoch)
             # it's too slow
             # lpips(self.ema_model, '_ema')
 
@@ -778,7 +781,7 @@ class LitModel(pl.LightningModule):
                     latent_sampler = None
 
                 conf = self.conf.clone()
-                conf.eval_num_images = 50_000
+                conf.eval_num_images = 100
                 score = evaluate_fid(
                     sampler,
                     self.ema_model,
@@ -899,24 +902,34 @@ def train(conf: TrainConfig, gpus, nodes=1, mode: str = 'train'):
         else:
             resume = None
 
-    tb_logger = pl_loggers.TensorBoardLogger(save_dir=conf.logdir,
+    # Create a datetime object for demonstration purposes
+    dt = datetime.now()
+
+    # Use strftime to format the datetime object
+    formatted_date = dt.strftime("%Y.%m.%d_%H.%M")
+
+    tb_logger = pl_loggers.TensorBoardLogger(save_dir=os.path.join(conf.logdir, formatted_date),
                                              name=None,
                                              version='')
 
     # from pytorch_lightning.
 
     plugins = []
-    if len(gpus) == 1 and nodes == 1:
-        accelerator = None
-    else:
-        accelerator = 'ddp'
-        from pytorch_lightning.plugins import DDPPlugin
+    # check if gpus is a list, if not skip:
+    if isinstance(gpus, list):
+        if len(gpus) == 1 and nodes == 1:
+            accelerator = None
+        else:
+            accelerator = 'ddp'
+            from pytorch_lightning.plugins import DDPPlugin
 
-        # important for working with gradient checkpoint
-        plugins.append(DDPPlugin(find_unused_parameters=False))
+            # important for working with gradient checkpoint
+            plugins.append(DDPPlugin(find_unused_parameters=False))
+    else:
+        accelerator = None
 
     trainer = pl.Trainer(
-        max_steps=conf.total_samples // conf.batch_size_effective,
+        max_steps=conf.num_epochs * conf.total_samples // conf.batch_size_effective,
         resume_from_checkpoint=resume,
         gpus=gpus,
         num_nodes=nodes,
