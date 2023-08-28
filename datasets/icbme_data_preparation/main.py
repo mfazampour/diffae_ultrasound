@@ -20,7 +20,7 @@ def find_nearest_in_B(A, B):
     nearest_points = []
     nearest_dists = []
     for point in A:
-        dist, ind = tree.query([point], k=1)  # returns distance and index of the nearest point
+        dist, ind = tree.query_set([point], k=1)  # returns distance and index of the nearest point
         nearest_points.append(B[ind[0][0]])
         nearest_dists.append(dist)
 
