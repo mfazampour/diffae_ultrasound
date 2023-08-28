@@ -1,3 +1,8 @@
+# Ultrasound Diffusion Autoencoder
+
+`sshuttle -r farid@10.23.0.99 -e 'ssh -J 89.58.56.145' 172.21.251.124 172.21.251.128`
+
+
 # Official implementation of Diffusion Autoencoders
 
 A CVPR 2022 (ORAL) paper ([paper](https://openaccess.thecvf.com/content/CVPR2022/html/Preechakul_Diffusion_Autoencoders_Toward_a_Meaningful_and_Decodable_Representation_CVPR_2022_paper.html), [site](https://diff-ae.github.io/), [5-min video](https://youtu.be/i3rjEsiHoUU)):

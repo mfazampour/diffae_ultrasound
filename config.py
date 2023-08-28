@@ -42,7 +42,7 @@ data_paths = {
     'celeba_relight':
     os.path.expanduser('datasets/celeba_hq_light/celeba_light.txt'),
     'ultrasound':
-    "/mnt/polyaxon/data1/ct_us_registration_prius/"
+    "/mnt/polyaxon/data1/ct_us_registration_prius/new_data/"
 }
 
 
@@ -167,6 +167,7 @@ class TrainConfig(BaseConfig):
     data_cache_dir: str = os.path.expanduser('~/cache')
     work_cache_dir: str = os.path.expanduser('~/mycache')
     on_cluster: bool = False
+    use_clahe: bool = False
     # to be overridden
     name: str = ''
 
@@ -190,14 +191,14 @@ class TrainConfig(BaseConfig):
     def fid_cache(self):
         # we try to use the local dirs to reduce the load over network drives
         # hopefully, this would reduce the disconnection problems with sshfs
-        return f'{self.work_cache_dir}/eval_images/{self.data_name}_size{self.img_size}_{self.eval_num_images}'
+        return f'{self.work_cache_dir}/eval_images/{self.data_name}_size{self.img_size}_{self.eval_num_images}_{self.name}'
 
     @property
     def data_path(self):
         # may use the cache dir
         path = data_paths[self.data_name]
         if self.on_cluster:
-            path = "/home/guests/farid_azampour/diffae_dataset/"
+            path = "/home/guests/farid_azampour/diffae_dataset_new/"
         if self.use_cache_dataset and path is not None:
             path = use_cached_dataset_path(
                 path, f'{self.data_cache_dir}/{self.data_name}')
@@ -311,10 +312,8 @@ class TrainConfig(BaseConfig):
                               crop_d2c=True,
                               **kwargs)
         elif self.data_name == 'ultrasound':
-            return UltrasoundDb(path=path or self.data_path,
-                                image_size=self.img_size,
-                                original_resolution=None,
-                                **kwargs)
+            return UltrasoundDb(path=path or self.data_path, image_size=self.img_size, original_resolution=None,
+                                use_clahe=self.use_clahe, **kwargs)
         else:
             raise NotImplementedError()
 

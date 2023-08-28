@@ -57,6 +57,7 @@ class ManipulateMode(Enum):
     # celeba with D2C's crop
     d2c_fewshot = 'd2cfewshot'
     d2c_fewshot_allneg = 'd2cfewshotallneg'
+    ultrasound_sim_real = 'ultrasound_sim_real'
 
     def is_celeba_attr(self):
         return self in [
@@ -69,6 +70,7 @@ class ManipulateMode(Enum):
         return self in [
             ManipulateMode.d2c_fewshot,
             ManipulateMode.d2c_fewshot_allneg,
+            ManipulateMode.ultrasound_sim_real,
         ]
 
     def is_fewshot(self):
@@ -77,10 +79,10 @@ class ManipulateMode(Enum):
             ManipulateMode.d2c_fewshot_allneg,
         ]
 
-    def is_fewshot_allneg(self):
-        return self in [
-            ManipulateMode.d2c_fewshot_allneg,
-        ]
+    # def is_fewshot_allneg(self):
+    #     return self in [
+    #         ManipulateMode.d2c_fewshot_allneg,
+    #     ]
 
 
 class ModelType(Enum):

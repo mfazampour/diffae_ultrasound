@@ -93,18 +93,18 @@ def ffhq128_autoenc_latent():
     return conf
 
 
-def ultrasound_autoenc_latent():
-    conf = pretrain_ultrasound_autoenc130M()
+def ultrasound_autoenc_latent(use_clahe, on_cluster):
+    conf = pretrain_ultrasound_autoenc130M(use_clahe=use_clahe, on_cluster=on_cluster)
     conf = latent_diffusion128_config(conf)
     conf = latent_mlp_2048_norm_10layers(conf)
     conf = latent_256_batch_size(conf)
     conf = adamw_weight_decay(conf)
-    conf.batch_size = 8
+    conf.batch_size = 48
     conf.latent_loss_type = LossType.l1
     conf.latent_beta_scheduler = 'const0.008'
     conf.name = 'ultrasound_autoenc_latent'
     conf.eval_num_images = 100
-    conf.num_epochs = 10
+    conf.num_epochs = 150
     return conf
 
 

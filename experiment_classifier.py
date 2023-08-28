@@ -154,6 +154,12 @@ class ClsModel(pl.LightningModule):
                                       self.conf.img_size,
                                       data_paths['celebahq_anno'],
                                       do_augment=True)
+        elif self.conf.manipulate_mode == ManipulateMode.ultrasound_sim_real:
+            return UltrasoundSimRealDataset(
+                self.conf.data_path,
+                self.conf.img_size,
+                do_augment=True,
+            )
         else:
             raise NotImplementedError()
 
@@ -245,15 +251,15 @@ class ClsModel(pl.LightningModule):
             gt = torch.where(labels > 0,
                              torch.ones_like(labels).float(),
                              torch.zeros_like(labels).float())
-        elif self.conf.manipulate_mode == ManipulateMode.relighting:
+        elif self.conf.manipulate_mode == ManipulateMode.ultrasound_sim_real:
             gt = labels
         else:
             raise NotImplementedError()
 
         if self.conf.manipulate_loss == ManipulateLossType.bce:
-            loss = F.binary_cross_entropy_with_logits(pred, gt)
+            loss = F.binary_cross_entropy_with_logits(pred.squeeze(), gt.squeeze())
             if pred_ema is not None:
-                loss_ema = F.binary_cross_entropy_with_logits(pred_ema, gt)
+                loss_ema = F.binary_cross_entropy_with_logits(pred_ema.squeeze(), gt.squeeze())
         elif self.conf.manipulate_loss == ManipulateLossType.mse:
             loss = F.mse_loss(pred, gt)
             if pred_ema is not None:
@@ -307,23 +313,34 @@ def train_cls(conf: TrainConfig, gpus):
         else:
             resume = None
 
-    tb_logger = pl_loggers.TensorBoardLogger(save_dir=conf.logdir,
+    # Create a datetime object for demonstration purposes
+    dt = datetime.now()
+
+    # Use strftime to format the datetime object
+    formatted_date = dt.strftime("%Y.%m.%d_%H.%M")
+    tb_logger = pl_loggers.TensorBoardLogger(save_dir=os.path.join(conf.logdir, formatted_date),
                                              name=None,
                                              version='')
 
     # from pytorch_lightning.
 
     plugins = []
-    if len(gpus) == 1:
-        accelerator = None
+
+    # check if gpus is a list, if not skip:
+    if isinstance(gpus, list):
+        if len(gpus) == 1:
+            accelerator = None
+        else:
+            accelerator = 'ddp'
+            from pytorch_lightning.plugins import DDPPlugin
+            # important for working with gradient checkpoint
+            plugins.append(DDPPlugin(find_unused_parameters=False))
     else:
-        accelerator = 'ddp'
-        from pytorch_lightning.plugins import DDPPlugin
-        # important for working with gradient checkpoint
-        plugins.append(DDPPlugin(find_unused_parameters=False))
+        accelerator = None
 
     trainer = pl.Trainer(
-        max_steps=conf.total_samples // conf.batch_size_effective,
+        max_epochs=conf.num_epochs,
+        # max_steps=conf.total_samples // conf.batch_size_effective,
         resume_from_checkpoint=resume,
         gpus=gpus,
         accelerator=accelerator,

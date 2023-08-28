@@ -59,91 +59,91 @@ def autoenc_base(in_channels=3):
     return conf
 
 
-def ffhq64_ddpm():
-    conf = ddpm()
-    conf.data_name = 'ffhqlmdb256'
-    conf.warmup = 0
-    conf.total_samples = 72_000_000
-    conf.scale_up_gpus(4)
-    return conf
+# def ffhq64_ddpm():
+#     conf = ddpm()
+#     conf.data_name = 'ffhqlmdb256'
+#     conf.warmup = 0
+#     conf.total_samples = 72_000_000
+#     conf.scale_up_gpus(4)
+#     return conf
+#
+#
+# def ffhq64_autoenc():
+#     conf = autoenc_base()
+#     conf.data_name = 'ffhqlmdb256'
+#     conf.warmup = 0
+#     conf.total_samples = 72_000_000
+#     conf.net_ch_mult = (1, 2, 4, 8)
+#     conf.net_enc_channel_mult = (1, 2, 4, 8, 8)
+#     conf.eval_every_samples = 1_000_000
+#     conf.eval_ema_every_samples = 1_000_000
+#     conf.scale_up_gpus(4)
+#     conf.make_model_conf()
+#     return conf
+#
+#
+# def celeba64d2c_ddpm():
+#     conf = ffhq128_ddpm()
+#     conf.data_name = 'celebalmdb'
+#     conf.eval_every_samples = 10_000_000
+#     conf.eval_ema_every_samples = 10_000_000
+#     conf.total_samples = 72_000_000
+#     conf.name = 'celeba64d2c_ddpm'
+#     return conf
+#
+#
+# def celeba64d2c_autoenc():
+#     conf = ffhq64_autoenc()
+#     conf.data_name = 'celebalmdb'
+#     conf.eval_every_samples = 10_000_000
+#     conf.eval_ema_every_samples = 10_000_000
+#     conf.total_samples = 72_000_000
+#     conf.name = 'celeba64d2c_autoenc'
+#     return conf
+#
+#
+# def ffhq128_ddpm():
+#     conf = ddpm()
+#     conf.data_name = 'ffhqlmdb256'
+#     conf.warmup = 0
+#     conf.total_samples = 48_000_000
+#     conf.img_size = 128
+#     conf.net_ch = 128
+#     # channels:
+#     # 3 => 128 * 1 => 128 * 1 => 128 * 2 => 128 * 3 => 128 * 4
+#     # sizes:
+#     # 128 => 128 => 64 => 32 => 16 => 8
+#     conf.net_ch_mult = (1, 1, 2, 3, 4)
+#     conf.eval_every_samples = 1_000_000
+#     conf.eval_ema_every_samples = 1_000_000
+#     conf.scale_up_gpus(4)
+#     conf.eval_ema_every_samples = 10_000_000
+#     conf.eval_every_samples = 10_000_000
+#     conf.make_model_conf()
+#     return conf
+#
+#
+# def ffhq128_autoenc_base():
+#     conf = autoenc_base()
+#     conf.data_name = 'ffhqlmdb256'
+#     conf.scale_up_gpus(4)
+#     conf.img_size = 128
+#     conf.net_ch = 128
+#     # final resolution = 8x8
+#     conf.net_ch_mult = (1, 1, 2, 3, 4)
+#     # final resolution = 4x4
+#     conf.net_enc_channel_mult = (1, 1, 2, 3, 4, 4)
+#     conf.eval_ema_every_samples = 10_000_000
+#     conf.eval_every_samples = 10_000_000
+#     conf.make_model_conf()
+#     return conf
 
 
-def ffhq64_autoenc():
-    conf = autoenc_base()
-    conf.data_name = 'ffhqlmdb256'
-    conf.warmup = 0
-    conf.total_samples = 72_000_000
-    conf.net_ch_mult = (1, 2, 4, 8)
-    conf.net_enc_channel_mult = (1, 2, 4, 8, 8)
-    conf.eval_every_samples = 1_000_000
-    conf.eval_ema_every_samples = 1_000_000
-    conf.scale_up_gpus(4)
-    conf.make_model_conf()
-    return conf
-
-
-def celeba64d2c_ddpm():
-    conf = ffhq128_ddpm()
-    conf.data_name = 'celebalmdb'
-    conf.eval_every_samples = 10_000_000
-    conf.eval_ema_every_samples = 10_000_000
-    conf.total_samples = 72_000_000
-    conf.name = 'celeba64d2c_ddpm'
-    return conf
-
-
-def celeba64d2c_autoenc():
-    conf = ffhq64_autoenc()
-    conf.data_name = 'celebalmdb'
-    conf.eval_every_samples = 10_000_000
-    conf.eval_ema_every_samples = 10_000_000
-    conf.total_samples = 72_000_000
-    conf.name = 'celeba64d2c_autoenc'
-    return conf
-
-
-def ffhq128_ddpm():
-    conf = ddpm()
-    conf.data_name = 'ffhqlmdb256'
-    conf.warmup = 0
-    conf.total_samples = 48_000_000
-    conf.img_size = 128
-    conf.net_ch = 128
-    # channels:
-    # 3 => 128 * 1 => 128 * 1 => 128 * 2 => 128 * 3 => 128 * 4
-    # sizes:
-    # 128 => 128 => 64 => 32 => 16 => 8
-    conf.net_ch_mult = (1, 1, 2, 3, 4)
-    conf.eval_every_samples = 1_000_000
-    conf.eval_ema_every_samples = 1_000_000
-    conf.scale_up_gpus(4)
-    conf.eval_ema_every_samples = 10_000_000
-    conf.eval_every_samples = 10_000_000
-    conf.make_model_conf()
-    return conf
-
-
-def ffhq128_autoenc_base():
-    conf = autoenc_base()
-    conf.data_name = 'ffhqlmdb256'
-    conf.scale_up_gpus(4)
-    conf.img_size = 128
-    conf.net_ch = 128
-    # final resolution = 8x8
-    conf.net_ch_mult = (1, 1, 2, 3, 4)
-    # final resolution = 4x4
-    conf.net_enc_channel_mult = (1, 1, 2, 3, 4, 4)
-    conf.eval_ema_every_samples = 10_000_000
-    conf.eval_every_samples = 10_000_000
-    conf.make_model_conf()
-    return conf
-
-
-def ultrasound_autoenc_base():
+def ultrasound_autoenc_base(compress_latent=False):
     conf = autoenc_base(in_channels=1)
     conf.data_name = 'ultrasound'
     conf.scale_up_gpus(4)
-    conf.img_size = 256  # todo check what fits on 24 gb
+    conf.img_size = 128  # todo check what fits on 24 gb
     conf.net_ch = 128
     # final resolution = 8x8
     conf.net_ch_mult = (1, 1, 2, 3, 4)
@@ -152,204 +152,219 @@ def ultrasound_autoenc_base():
     conf.eval_ema_every_samples = 16000
     conf.eval_every_samples = 16000
 
-    # conf.net_beatgans_embed_channels = 256
-    # conf.net_ch_mult = (1, 2, 4, 8)
-    # conf.net_ch = 32
-    # conf.net_enc_channel_mult = (1, 2, 4, 4, 8)
+    conf.net_beatgans_embed_channels = 512
+    conf.style_ch = 512
+    if compress_latent:
+        conf.net_beatgans_embed_channels = 128
+        conf.style_ch = 128
 
     conf.make_model_conf()
     return conf
 
 
 
-def ffhq256_autoenc():
-    conf = ffhq128_autoenc_base()
-    conf.img_size = 256
-    conf.net_ch = 128
-    conf.net_ch_mult = (1, 1, 2, 2, 4, 4)
-    conf.net_enc_channel_mult = (1, 1, 2, 2, 4, 4, 4)
-    conf.eval_every_samples = 10_000_000
-    conf.eval_ema_every_samples = 10_000_000
-    conf.total_samples = 200_000_000
-    conf.batch_size = 64
-    conf.make_model_conf()
-    conf.name = 'ffhq256_autoenc'
-    return conf
+# def ffhq256_autoenc():
+#     conf = ffhq128_autoenc_base()
+#     conf.img_size = 256
+#     conf.net_ch = 128
+#     conf.net_ch_mult = (1, 1, 2, 2, 4, 4)
+#     conf.net_enc_channel_mult = (1, 1, 2, 2, 4, 4, 4)
+#     conf.eval_every_samples = 10_000_000
+#     conf.eval_ema_every_samples = 10_000_000
+#     conf.total_samples = 200_000_000
+#     conf.batch_size = 64
+#     conf.make_model_conf()
+#     conf.name = 'ffhq256_autoenc'
+#     return conf
+#
+#
+# def ffhq256_autoenc_eco():
+#     conf = ffhq128_autoenc_base()
+#     conf.img_size = 256
+#     conf.net_ch = 128
+#     conf.net_ch_mult = (1, 1, 2, 2, 4, 4)
+#     conf.net_enc_channel_mult = (1, 1, 2, 2, 4, 4, 4)
+#     conf.eval_every_samples = 10_000_000
+#     conf.eval_ema_every_samples = 10_000_000
+#     conf.total_samples = 200_000_000
+#     conf.batch_size = 64
+#     conf.make_model_conf()
+#     conf.name = 'ffhq256_autoenc_eco'
+#     return conf
+#
+#
+# def ffhq128_ddpm_72M():
+#     conf = ffhq128_ddpm()
+#     conf.total_samples = 72_000_000
+#     conf.name = 'ffhq128_ddpm_72M'
+#     return conf
+#
+#
+# def ffhq128_autoenc_72M():
+#     conf = ffhq128_autoenc_base()
+#     conf.total_samples = 72_000_000
+#     conf.name = 'ffhq128_autoenc_72M'
+#     return conf
+#
+#
+# def ffhq128_ddpm_130M():
+#     conf = ffhq128_ddpm()
+#     conf.total_samples = 130_000_000
+#     conf.eval_ema_every_samples = 10_000_000
+#     conf.eval_every_samples = 10_000_000
+#     conf.name = 'ffhq128_ddpm_130M'
+#     return conf
+#
+#
+# def ffhq128_autoenc_130M():
+#     conf = ffhq128_autoenc_base()
+#     conf.total_samples = 130_000_000
+#     conf.eval_ema_every_samples = 10_000_000
+#     conf.eval_every_samples = 10_000_000
+#     conf.name = 'ffhq128_autoenc_130M'
+#     return conf
 
 
-def ffhq256_autoenc_eco():
-    conf = ffhq128_autoenc_base()
-    conf.img_size = 256
-    conf.net_ch = 128
-    conf.net_ch_mult = (1, 1, 2, 2, 4, 4)
-    conf.net_enc_channel_mult = (1, 1, 2, 2, 4, 4, 4)
-    conf.eval_every_samples = 10_000_000
-    conf.eval_ema_every_samples = 10_000_000
-    conf.total_samples = 200_000_000
-    conf.batch_size = 64
-    conf.make_model_conf()
-    conf.name = 'ffhq256_autoenc_eco'
-    return conf
-
-
-def ffhq128_ddpm_72M():
-    conf = ffhq128_ddpm()
-    conf.total_samples = 72_000_000
-    conf.name = 'ffhq128_ddpm_72M'
-    return conf
-
-
-def ffhq128_autoenc_72M():
-    conf = ffhq128_autoenc_base()
-    conf.total_samples = 72_000_000
-    conf.name = 'ffhq128_autoenc_72M'
-    return conf
-
-
-def ffhq128_ddpm_130M():
-    conf = ffhq128_ddpm()
-    conf.total_samples = 130_000_000
-    conf.eval_ema_every_samples = 10_000_000
-    conf.eval_every_samples = 10_000_000
-    conf.name = 'ffhq128_ddpm_130M'
-    return conf
-
-
-def ffhq128_autoenc_130M():
-    conf = ffhq128_autoenc_base()
-    conf.total_samples = 130_000_000
-    conf.eval_ema_every_samples = 10_000_000
-    conf.eval_every_samples = 10_000_000
-    conf.name = 'ffhq128_autoenc_130M'
-    return conf
-
-
-def ultrasound_autoenc(on_cluster=False):
-    conf = ultrasound_autoenc_base()
+def ultrasound_autoenc(on_cluster=False, compress_latent=False, use_clahe=False):
+    conf = ultrasound_autoenc_base(compress_latent=compress_latent)
     conf.total_samples = 14_600
     # conf.eval_ema_every_samples = 200
     # conf.eval_every_samples = 100
-    conf.name = 'ultrasound_autoenc_256'
-    conf.batch_size = 16
-    conf.batch_size_eval = 16
+    conf.name = 'ultrasound_autoenc_median'
+    if use_clahe:
+        conf.name += '_clahe'
+        conf.use_clahe = True
+
+    if compress_latent:
+        conf.name += '_compressed'
+
     conf.fp16 = True
-    conf.num_epochs = 50
-    conf.eval_num_images = 100
+    conf.num_epochs = 100
+    conf.eval_num_images = 200
+    conf.lr = 2e-5
 
     if on_cluster:
         conf.on_cluster = True
-        # todo: check if the cache folder should change
+        conf.batch_size = 48  # 256: 16
+        conf.batch_size_eval = 48  # 256: 16
+    else:
+        conf.batch_size = 8
+        conf.batch_size_eval = 8
+        conf.eval_ema_every_samples = 10
+        conf.eval_every_samples = 10
+        conf.eval_num_images = 200
+        conf.base_dir = '/home/farid/Desktop/diffae_checkpoint'
 
     # conf.num_workers = 0
     return conf
 
 
-def horse128_ddpm():
-    conf = ffhq128_ddpm()
-    conf.data_name = 'horse256'
-    conf.total_samples = 130_000_000
-    conf.eval_ema_every_samples = 10_000_000
-    conf.eval_every_samples = 10_000_000
-    conf.name = 'horse128_ddpm'
-    return conf
+# def horse128_ddpm():
+#     conf = ffhq128_ddpm()
+#     conf.data_name = 'horse256'
+#     conf.total_samples = 130_000_000
+#     conf.eval_ema_every_samples = 10_000_000
+#     conf.eval_every_samples = 10_000_000
+#     conf.name = 'horse128_ddpm'
+#     return conf
+#
+#
+# def horse128_autoenc():
+#     conf = ffhq128_autoenc_base()
+#     conf.data_name = 'horse256'
+#     conf.total_samples = 130_000_000
+#     conf.eval_ema_every_samples = 10_000_000
+#     conf.eval_every_samples = 10_000_000
+#     conf.name = 'horse128_autoenc'
+#     return conf
+#
+#
+# def bedroom128_ddpm():
+#     conf = ffhq128_ddpm()
+#     conf.data_name = 'bedroom256'
+#     conf.eval_ema_every_samples = 10_000_000
+#     conf.eval_every_samples = 10_000_000
+#     conf.total_samples = 120_000_000
+#     conf.name = 'bedroom128_ddpm'
+#     return conf
+#
+#
+# def bedroom128_autoenc():
+#     conf = ffhq128_autoenc_base()
+#     conf.data_name = 'bedroom256'
+#     conf.eval_ema_every_samples = 10_000_000
+#     conf.eval_every_samples = 10_000_000
+#     conf.total_samples = 120_000_000
+#     conf.name = 'bedroom128_autoenc'
+#     return conf
+#
+#
+# def pretrain_celeba64d2c_72M():
+#     conf = celeba64d2c_autoenc()
+#     conf.pretrain = PretrainConfig(
+#         name='72M',
+#         path=f'checkpoints/{celeba64d2c_autoenc().name}/last.ckpt',
+#     )
+#     conf.latent_infer_path = f'checkpoints/{celeba64d2c_autoenc().name}/latent.pkl'
+#     return conf
+#
+#
+# def pretrain_ffhq128_autoenc72M():
+#     conf = ffhq128_autoenc_base()
+#     conf.postfix = ''
+#     conf.pretrain = PretrainConfig(
+#         name='72M',
+#         path=f'checkpoints/{ffhq128_autoenc_72M().name}/last.ckpt',
+#     )
+#     conf.latent_infer_path = f'checkpoints/{ffhq128_autoenc_72M().name}/latent.pkl'
+#     return conf
+#
+#
+# def pretrain_ffhq128_autoenc130M():
+#     conf = ffhq128_autoenc_base()
+#     conf.pretrain = PretrainConfig(
+#         name='130M',
+#         path=f'checkpoints/{ffhq128_autoenc_130M().name}/last.ckpt',
+#     )
+#     conf.latent_infer_path = f'checkpoints/{ffhq128_autoenc_130M().name}/latent.pkl'
+#     return conf
 
 
-def horse128_autoenc():
-    conf = ffhq128_autoenc_base()
-    conf.data_name = 'horse256'
-    conf.total_samples = 130_000_000
-    conf.eval_ema_every_samples = 10_000_000
-    conf.eval_every_samples = 10_000_000
-    conf.name = 'horse128_autoenc'
-    return conf
-
-
-def bedroom128_ddpm():
-    conf = ffhq128_ddpm()
-    conf.data_name = 'bedroom256'
-    conf.eval_ema_every_samples = 10_000_000
-    conf.eval_every_samples = 10_000_000
-    conf.total_samples = 120_000_000
-    conf.name = 'bedroom128_ddpm'
-    return conf
-
-
-def bedroom128_autoenc():
-    conf = ffhq128_autoenc_base()
-    conf.data_name = 'bedroom256'
-    conf.eval_ema_every_samples = 10_000_000
-    conf.eval_every_samples = 10_000_000
-    conf.total_samples = 120_000_000
-    conf.name = 'bedroom128_autoenc'
-    return conf
-
-
-def pretrain_celeba64d2c_72M():
-    conf = celeba64d2c_autoenc()
-    conf.pretrain = PretrainConfig(
-        name='72M',
-        path=f'checkpoints/{celeba64d2c_autoenc().name}/last.ckpt',
-    )
-    conf.latent_infer_path = f'checkpoints/{celeba64d2c_autoenc().name}/latent.pkl'
-    return conf
-
-
-def pretrain_ffhq128_autoenc72M():
-    conf = ffhq128_autoenc_base()
-    conf.postfix = ''
-    conf.pretrain = PretrainConfig(
-        name='72M',
-        path=f'checkpoints/{ffhq128_autoenc_72M().name}/last.ckpt',
-    )
-    conf.latent_infer_path = f'checkpoints/{ffhq128_autoenc_72M().name}/latent.pkl'
-    return conf
-
-
-def pretrain_ffhq128_autoenc130M():
-    conf = ffhq128_autoenc_base()
-    conf.pretrain = PretrainConfig(
-        name='130M',
-        path=f'checkpoints/{ffhq128_autoenc_130M().name}/last.ckpt',
-    )
-    conf.latent_infer_path = f'checkpoints/{ffhq128_autoenc_130M().name}/latent.pkl'
-    return conf
-
-
-def pretrain_ultrasound_autoenc130M():
+def pretrain_ultrasound_autoenc130M(use_clahe=False, on_cluster=False):
     conf = ultrasound_autoenc_base()
     conf.pretrain = PretrainConfig(
         name='130M',
-        path=f'checkpoints/{ultrasound_autoenc().name}/last.ckpt',
+        path=f'{conf.base_dir}/{ultrasound_autoenc(use_clahe=use_clahe, on_cluster=on_cluster).name}/last.ckpt',
     )
-    conf.latent_infer_path = f'checkpoints/{ultrasound_autoenc().name}/latent.pkl'
+    conf.latent_infer_path = f'{conf.base_dir}/{ultrasound_autoenc(use_clahe=use_clahe, on_cluster=on_cluster).name}/latent.pkl'
     return conf
 
 
-def pretrain_ffhq256_autoenc():
-    conf = ffhq256_autoenc()
-    conf.pretrain = PretrainConfig(
-        name='90M',
-        path=f'checkpoints/{ffhq256_autoenc().name}/last.ckpt',
-    )
-    conf.latent_infer_path = f'checkpoints/{ffhq256_autoenc().name}/latent.pkl'
-    return conf
-
-
-def pretrain_horse128():
-    conf = horse128_autoenc()
-    conf.pretrain = PretrainConfig(
-        name='82M',
-        path=f'checkpoints/{horse128_autoenc().name}/last.ckpt',
-    )
-    conf.latent_infer_path = f'checkpoints/{horse128_autoenc().name}/latent.pkl'
-    return conf
-
-
-def pretrain_bedroom128():
-    conf = bedroom128_autoenc()
-    conf.pretrain = PretrainConfig(
-        name='120M',
-        path=f'checkpoints/{bedroom128_autoenc().name}/last.ckpt',
-    )
-    conf.latent_infer_path = f'checkpoints/{bedroom128_autoenc().name}/latent.pkl'
-    return conf
+# def pretrain_ffhq256_autoenc():
+#     conf = ffhq256_autoenc()
+#     conf.pretrain = PretrainConfig(
+#         name='90M',
+#         path=f'checkpoints/{ffhq256_autoenc().name}/last.ckpt',
+#     )
+#     conf.latent_infer_path = f'checkpoints/{ffhq256_autoenc().name}/latent.pkl'
+#     return conf
+#
+#
+# def pretrain_horse128():
+#     conf = horse128_autoenc()
+#     conf.pretrain = PretrainConfig(
+#         name='82M',
+#         path=f'checkpoints/{horse128_autoenc().name}/last.ckpt',
+#     )
+#     conf.latent_infer_path = f'checkpoints/{horse128_autoenc().name}/latent.pkl'
+#     return conf
+#
+#
+# def pretrain_bedroom128():
+#     conf = bedroom128_autoenc()
+#     conf.pretrain = PretrainConfig(
+#         name='120M',
+#         path=f'checkpoints/{bedroom128_autoenc().name}/last.ckpt',
+#     )
+#     conf.latent_infer_path = f'checkpoints/{bedroom128_autoenc().name}/latent.pkl'
+#     return conf

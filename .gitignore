@@ -17,3 +17,6 @@ checkpoints
 /.idea
 
 /datasets/icbme_data_preparation/.idea/
+imgs_manipulated/
+
+datasets/interpolation/

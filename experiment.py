@@ -270,7 +270,7 @@ class LitModel(pl.LightningModule):
                                             flip_prob=0,
                                             crop_d2c=True)
         else:
-            data.transform = make_transform(self.conf.img_size, flip_prob=0)
+            data.transform = make_transform(self.conf.img_size, flip_prob=0.5)
 
         # data = SubsetDataset(data, 21)
 
@@ -693,7 +693,7 @@ class LitModel(pl.LightningModule):
                 print('infer ...')
                 conds = self.infer_whole_dataset().float()
                 # NOTE: always use this path for the latent.pkl files
-                save_path = f'checkpoints/{self.conf.name}/latent.pkl'
+                save_path = f'{self.conf.base_dir}/{self.conf.name}/latent.pkl'
             else:
                 raise NotImplementedError()
 
@@ -929,8 +929,9 @@ def train(conf: TrainConfig, gpus, nodes=1, mode: str = 'train'):
         accelerator = None
 
     trainer = pl.Trainer(
-        max_steps=conf.num_epochs * conf.total_samples // conf.batch_size_effective,
-        resume_from_checkpoint=resume,
+        max_epochs=conf.num_epochs,
+        # max_steps=conf.num_epochs * conf.total_samples // conf.batch_size_effective,
+        resume_from_checkpoint=resume ,
         gpus=gpus,
         num_nodes=nodes,
         accelerator=accelerator,

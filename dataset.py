@@ -9,8 +9,12 @@ from torchvision import transforms
 from torchvision.datasets import CIFAR10, LSUNClass
 import torch
 import pandas as pd
+from kornia.enhance import equalize_clahe
 
 import torchvision.transforms.functional as Ftrans
+
+from torchvision import transforms
+import random
 
 
 class ImageDataset(Dataset):
@@ -84,10 +88,18 @@ class SubsetDataset(Dataset):
 
 
 class BaseUltrasoundDataset(Dataset):
-    def __init__(self, path):
+    def __init__(self, path, only_load_synthetic=False, only_load_real=False):
         self.path = path
+        # convert to global path
+        self.path = os.path.abspath(self.path)
         # find all the png files in the path
-        self.paths = [p for p in Path(f'{path}').glob(f'**/*.png')]
+        self.paths = [p for p in Path(f'{self.path}').glob(f'**/*.png')]
+
+        if only_load_synthetic:
+            self.paths = [p for p in self.paths if 'simulated' in str(p)]
+        elif only_load_real:
+            self.paths = [p for p in self.paths if 'filtered' not in str(p)]
+
         # sort the paths
         self.paths = sorted(self.paths)
         # get the length of the dataset
@@ -97,7 +109,7 @@ class BaseUltrasoundDataset(Dataset):
         return self.length
 
     def __getitem__(self, index):
-        path = os.path.join(self.path, self.paths[index])
+        path = self.paths[index]
         img = Image.open(path)
         return img
 
@@ -148,7 +160,11 @@ def make_transform(
     else:
         transform = [
             transforms.Resize(image_size),
-            transforms.CenterCrop(image_size),
+            # transforms.CenterCrop(image_size),
+            transforms.Lambda(lambda img: transforms.functional.pad(img, random_padding(size=15))),
+            # Add random padding
+            transforms.CenterCrop(image_size * 1.1),
+            transforms.RandomCrop(image_size),
         ]
     transform.append(transforms.RandomHorizontalFlip(p=flip_prob))
     transform.append(transforms.ToTensor())
@@ -235,6 +251,45 @@ def d2c_crop():
     return Crop(x1, x2, y1, y2)
 
 
+def random_padding(size=10):
+    return (random.randint(0, size), random.randint(0, size), random.randint(0, size), random.randint(0, size))
+
+
+# import torch.nn.functional as F
+# def shift_up_10(image_tensor):
+#     # Create a tensor representing the shift 10 pixels up
+#     shift = torch.tensor([0.0, 0.0, 0.0, -10.0], dtype=torch.float32)
+#     shift_matrix = F.affine_grid(shift.view(1, 2, 2), size=image_tensor.shape, align_corners=False)
+#
+#     # Apply the shift to the image tensor
+#     shifted_image = F.grid_sample(image_tensor.unsqueeze(0), shift_matrix, align_corners=False)
+#     return shifted_image.squeeze(0)
+
+from torchvision.transforms.functional import affine
+def shift_up_affine(img, shift=-10):
+    # Apply the transformation
+    shifted_img = affine(img, angle=0, translate=(0, shift), scale=1, shear=[0, 0])
+    return shifted_img
+
+
+def median_filter(input_tensor, kernel_size=3):
+    # Ensure the kernel size is odd
+    if kernel_size % 2 == 0:
+        raise ValueError("Kernel size must be an odd number.")
+
+    # Pad the input tensor
+    padding = kernel_size // 2
+    padded_tensor = torch.nn.functional.pad(input_tensor, (padding, padding, padding, padding), mode='reflect')
+
+    # Unfold the tensor into patches
+    unfolded_tensor = padded_tensor.unfold(1, kernel_size, 1).unfold(2, kernel_size, 1)
+
+    # Compute the median along the unfolded dimensions
+    median_filtered_tensor = unfolded_tensor.median(dim=-1).values.median(dim=-1).values
+
+    return median_filtered_tensor
+
+
 class UltrasoundDb(Dataset):
 
     def __init__(self,
@@ -245,9 +300,12 @@ class UltrasoundDb(Dataset):
                  as_tensor: bool = True,
                  do_augment: bool = True,
                  do_normalize: bool = True,
+                 only_load_synthetic: bool = False,
+                 do_denoising: bool = True,
+                 use_clahe: bool = False,
                  **kwargs):
         self.original_resolution = original_resolution
-        self.data = BaseUltrasoundDataset(path)
+        self.data = BaseUltrasoundDataset(path, only_load_synthetic=only_load_synthetic)
         self.length = len(self.data)
 
         if split is None:
@@ -255,19 +313,38 @@ class UltrasoundDb(Dataset):
         else:
             raise NotImplementedError()
 
+        shift_up_10_transform = transforms.Lambda(lambda x: shift_up_affine(x))
+
         transform = [
             transforms.Resize(image_size),
-            transforms.CenterCrop(image_size),
+            transforms.Lambda(lambda img: transforms.functional.pad(img, random_padding(size=15))),  # Add random padding
+            transforms.CenterCrop(image_size * 1.2),
+            transforms.RandomCrop(image_size),
         ]
+
 
         if do_augment:
             transform.append(transforms.RandomHorizontalFlip())
+
+        transform_simulated = transform + [shift_up_10_transform]
+
         if as_tensor:
             transform.append(transforms.ToTensor())
+            transform_simulated.append(transforms.ToTensor())
+
+        if do_denoising:
+            transform.append(transforms.Lambda(lambda img: median_filter(img, kernel_size=3)))
+            transform_simulated.append(transforms.Lambda(lambda img: median_filter(img, kernel_size=3)))
+            if use_clahe:
+                transform.append(transforms.Lambda(lambda img: equalize_clahe(img, clip_limit=10.0)))
+                transform_simulated.append(transforms.Lambda(lambda img: equalize_clahe(img, clip_limit=10.0)))
+
         if do_normalize:
-            transform.append(
-                transforms.Normalize(0.5, 0.5))
+            transform.append(transforms.Normalize(0.5, 0.5))
+            transform_simulated.append(transforms.Normalize(0.5, 0.5))
+
         self.transform = transforms.Compose(transform)
+        self.transform_simulated = transforms.Compose(transform_simulated)
 
     def __len__(self):
         return self.length
@@ -277,8 +354,16 @@ class UltrasoundDb(Dataset):
         index = index + self.offset
         img = self.data[index]
         if self.transform is not None:
-            img = self.transform(img)
+            if "simulated" in self.data.paths[index].__str__():
+                img = self.transform_simulated(img)
+            else:
+                img = self.transform(img)
         return {'img': img, 'index': index}
+
+    def get_path(self, index):
+        assert index < self.length
+        index = index + self.offset
+        return self.data.paths[index]
 
 
 class CelebAlmdb(Dataset):
@@ -778,3 +863,55 @@ class Repeat(Dataset):
     def __getitem__(self, index):
         index = index % self.original_len
         return self.dataset[index]
+
+
+class UltrasoundSimRealDataset(Dataset):
+    def __init__(self,
+                 path,
+                 image_size,
+                 do_augment: bool = False,
+                 do_transform: bool = True,
+                 do_normalize: bool = True):
+        super().__init__()
+        self.image_size = image_size
+        self.data = UltrasoundDb(path, self.image_size, do_augment=do_augment, do_normalize=do_normalize,
+                                 do_transform=do_transform)
+
+        transform = [
+            transforms.Resize(image_size),
+            transforms.CenterCrop(image_size),
+        ]
+        if do_augment:
+            transform.append(transforms.RandomHorizontalFlip())
+        if do_transform:
+            transform.append(transforms.ToTensor())
+        if do_normalize:
+            transform.append(
+                transforms.Normalize(0.5, 0.5))
+        self.transform = transforms.Compose(transform)
+
+        # self.df = pd.read_csv(f'data/celebahq_fewshots/K{K}_{cls_name}.csv',
+        #                       index_col=0)
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, index):
+        dict_ = self.data.__getitem__(index)
+
+        img = dict_['img']
+
+        path = self.data.get_path(index).__str__()
+        # 1 for real, 0 for sim, filtered is real
+        # check if the path contains 'filtered'
+        label = 1.0 if 'filtered' in path else 0.0
+
+        # also check if img is PIL Image
+        if self.transform is not None and isinstance(img, Image.Image):  # todo: check if this is called
+            img = self.transform(img)
+            print('transformed  image')
+            exit(-1)
+
+        index = dict_['index']
+
+        return {'img': img, 'index': index, 'labels': label}
